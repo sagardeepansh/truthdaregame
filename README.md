@@ -25,8 +25,8 @@ Follow these steps to get the app running locally:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/sagardeepansh/truth-dare-game.git
-cd truth-dare-game
+git clone https://github.com/sagardeepansh/truthdaregame.git
+cd truthdaregame
 ```
 
 2. Install dependencies:
