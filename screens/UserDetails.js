@@ -1,69 +1,165 @@
-// import { StyleSheet, View, Text } from 'react-native';
-import { View, Text, TextInput, Pressable, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState } from 'react';
+import {
+    View,
+    Text,
+    TextInput,
+    Pressable,
+    FlatList,
+    StyleSheet,
+    TouchableOpacity,
+    Alert,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { useState } from 'react';
+import { Swipeable } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
+import { addUser, deleteUser } from '../redux/slices/userSlice';
 
 export default function UserDetails({ navigation }) {
+    const dispatch = useDispatch();
+    const { users } = useSelector((state) => state.user);
     const [name, setName] = useState('');
-    const [users, setUsers] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const nameInputRef = React.useRef(null);
+
+
     const genders = ['male', 'female', 'trans'];
     const genderIcons = ['mars', 'venus', 'transgender-alt'];
-    const [currentIndex, setCurrentIndex] = useState(0);
 
-    const addUser = () => {
-        if (!name.trim()) {
+    const addPlayer = () => {
+        if (!name?.trim()) {
             Alert.alert('Validation Error', 'Name is required');
             return;
         }
 
-        const newUser = { id: Date.now().toString(), name, sex: genders[currentIndex] };
-        setUsers([...users, newUser]);
-        setName('');
+        dispatch(
+            addUser({
+                id: Date.now().toString(),
+                name,
+                gender: genders[currentIndex],
+                sex: currentIndex
+            })
+        );
+        setName();
+        nameInputRef.current?.blur();
     };
 
-
-    const handlePress = () => {
+    const handleGenderChange = () => {
         const nextIndex = (currentIndex + 1) % genders.length;
         setCurrentIndex(nextIndex);
     };
 
+    const handleDelete = (id) => {
+        Alert.alert(
+            'Delete Player',
+            'Are you sure you want to delete this player?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Delete', onPress: () => dispatch(deleteUser(id)) }
+            ]
+        );
+    };
+
+    const startGame = () => {
+        if (users.length < 2) {
+            Alert.alert('Validation Error', `Please add at least two player ${users.length}`);
+            return;
+        }
+        navigation.navigate('gamemodescreen'); // Replace with your actual game screen name
+    };
+
+    const renderRightActions = (id) => (
+        <View style={styles.rightAction}>
+            <Pressable
+                onPress={() => handleDelete(id)}
+                style={styles.deleteButton}
+            >
+                <Icon name={'trash'} size={20} color="#fff" />
+            </Pressable>
+        </View>
+    );
+
+    const renderItem = ({ item }) => (
+        <Swipeable
+            overshootRight={false}
+            renderRightActions={() => renderRightActions(item.id)}
+        >
+            <View style={styles.listItem}>
+                <Text style={styles.listItemName}>{item.name}</Text>
+                <Icon
+                    name={genderIcons[item.sex]}
+                    size={24}
+                    color="#fff"
+                />
+            </View>
+        </Swipeable>
+    );
+
     return (
         <LinearGradient
-            colors={['#009cf7', '#016df5']} // Set your gradient colors here
+            colors={['#b41c1c', '#6b1f20']}
             style={styles.mainContainer}
         >
-            <View style={styles.container} >
-                <Text style={styles.title}>Add User</Text>
+            <View style={styles.container}>
+                <Text style={styles.title}>Add Player</Text>
+
                 <View style={styles.userNameBox}>
                     <TextInput
                         style={styles.input}
+                        ref={nameInputRef}
                         placeholder="Enter name"
                         value={name}
+                        placeholderTextColor="#999"
                         onChangeText={setName}
+                        maxLength={20}
+                    // onSubmitEditing={addPlayer}
                     />
-                    <Pressable onPress={handlePress} style={styles.button}>
-                        <Icon style={styles.genderIcons} name={genderIcons[currentIndex]} size={24} color="#fff" /> 
+                    <Pressable
+                        onPress={handleGenderChange}
+                        style={styles.button}
+                    >
+                        <Icon
+                            style={styles.genderIcons}
+                            name={genderIcons[currentIndex]}
+                            size={24}
+                            color="#fff"
+                        />
                     </Pressable>
                 </View>
-                <TouchableOpacity style={styles.btnAddUser} onPress={addUser}>
-                    <Text style={styles.btnAddUserText}>Add User</Text>
+
+                <TouchableOpacity
+                    style={styles.btnAddUser}
+                    onPress={addPlayer}
+                >
+                    <Text style={styles.btnAddUserText}>Add Player</Text>
                 </TouchableOpacity>
-                <Text style={styles.listTitle}>User List:</Text>
-                {users.length === 0 ? (
-                    <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>No users added yet</Text>
-                    </View>
-                ) : (
-                    <FlatList
-                        data={users}
-                        keyExtractor={(item) => item.id}
-                        contentContainerStyle={styles.listContainer}
-                        renderItem={({ item }) => (
-                            <Text style={styles.listItem}>{item.name} ({item.sex})</Text>
-                        )}
-                    />
+
+                {users.length > 0 && (
+                    <>
+                        <Text style={styles.listTitle}>
+                            Player{users.length !== 1 ? 's' : ''} Added
+                        </Text>
+                        <View style={styles.listWrapper}>
+                            <FlatList
+                                data={users}
+                                keyExtractor={(item) => item.id}
+                                renderItem={renderItem}
+                                showsVerticalScrollIndicator={false}
+                            />
+                        </View>
+                    </>
                 )}
+
+                <TouchableOpacity
+                    style={[
+                        styles.btnStart,
+                        users.length === 0 && { opacity: 0.7 }
+                    ]}
+                    onPress={startGame}
+                    disabled={users.length === 0}
+                >
+                    <Text style={styles.btnStartText}>Start Game</Text>
+                </TouchableOpacity>
             </View>
         </LinearGradient>
     );
@@ -72,97 +168,130 @@ export default function UserDetails({ navigation }) {
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
-        justifyContent: 'center',  // Vertically center
-        alignItems: 'center',  // Horizontally center
-        paddingHorizontal: 20,  // To ensure no content is too close to the edges
     },
     container: {
-        width: '100%',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 40,
+        paddingBottom: 20,
     },
     userNameBox: {
         flexDirection: 'row',
         gap: 5,
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        width: '100%',
     },
-    genderIcons:{
-        width:25,
-        maxWidth:'100%',
+    genderIcons: {
+        width: 25,
+        textAlign: 'center',
     },
-    title: { 
+    title: {
         fontSize: 24,
         fontWeight: 'bold',
         color: '#fff',
-        fontFamily: 'Roboto_400Regular',
         marginBottom: 20,
+        textAlign: 'center',
     },
     input: {
         width: '80%',
-        padding: 10,
-        marginBottom: 0,
-        height: 50,
-        verticalAlign: 'middle',
-        borderWidth: 0,
-        borderRadius: 5,
+        paddingLeft: 20,
+        fontSize: 18,
+        fontWeight: '600',
+        borderRadius: 50,
+        height: 60,
         backgroundColor: '#fff',
     },
     button: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        borderRadius: 20,
-        height: 50,
-        justifyContent: 'center', // Vertically center
+        borderRadius: 50,
+        height: 60,
+        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#0b1b3a',
-        marginBottom: 0,
+        backgroundColor: '#000',
     },
     btnAddUser: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        borderRadius: 20,
-        height: 50,
-        backgroundColor: '#0b1b3a',
-        marginBottom: 0,
-        marginTop: 20, // Fixed from string to number
-        justifyContent: 'center', // Vertically center
-        alignItems: 'center',     // Horizontally center
+        borderRadius: 50,
+        height: 60,
+        backgroundColor: '#000',
+        marginTop: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
     },
-
     btnAddUserText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    text: {
-        color: '#fff',
-        fontSize: 16,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    listTitle: {
-        fontSize: 18,
-        marginBottom: 10,
-        color: '#fff',
-    },
-    emptyContainer: {
+    btnStart: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 50,
+        height: 60,
+        backgroundColor: '#fccb06',
+        marginTop: 20,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    emptyText: {
-        fontSize: 18,
-        color: '#666',
-    },
-    listContainer: {
-        paddingBottom: 100,
         width: '100%',
     },
-    listItem: {
-        fontSize: 16,
-        paddingVertical: 4,
+    btnStartText: {
+        color: '#000',
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    listTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
         color: '#fff',
+        marginTop: 30,
+        marginBottom: 10,
+        alignSelf: 'flex-start',
+    },
+    listWrapper: {
+        flex: 1,
+        width: '100%',
+        maxHeight: 250,
+    },
+    listItem: {
+        marginTop: 0,
+        paddingVertical: 0,
+        borderRadius: 10,
+        height: 50,
+        borderBottomColor: '#ffffff4d',
+        borderBottomWidth: 1,
+        padding: 10,
+        flexDirection: 'row',
+        gap: 5,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    listItemName: {
+        fontSize: 18,
+        color: '#fff',
+    },
+    rightAction: {
+        backgroundColor: 'red',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+        paddingHorizontal: 20,
+        marginTop: 10,
+        borderRadius: 0,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+    },
+    deleteButton: {
+        flex: 1,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
     },
 });

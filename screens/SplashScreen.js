@@ -14,7 +14,7 @@ export default function SplashScreen({ navigation }) {
 
     return (
         <LinearGradient
-            colors={['#009cf7', '#016df5']} // Set your gradient colors here
+            colors={['#b41c1c', '#6b1f20']} // Set your gradient colors here
             style={styles.container}>
             <View >
                 <Text style={styles.headline}>Truth & Dare</Text>

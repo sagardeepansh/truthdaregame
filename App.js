@@ -11,7 +11,11 @@ const Stack = createNativeStackNavigator();
 import SplashScreen from './screens/SplashScreen';
 import UserDetails from './screens/UserDetails';
 import DebugScreen from './screens/DebugScreen';
+import GameScreen from './screens/GameScreen';
+import GameModeScreen from './screens/GameModeScreen';
 import { StrictMode } from 'react';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -22,17 +26,21 @@ export default function App() {
   }
   return (
     <>
-    <StrictMode>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="splash" screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="splash" component={SplashScreen} />
-            <Stack.Screen name="userdetails" component={UserDetails} />
-            <Stack.Screen name="debugscreen" component={DebugScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </GestureHandlerRootView>
-      </StrictMode>
+      {/* <StrictMode> */}
+      <Provider store={store}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="splash" screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="splash" component={SplashScreen} />
+              <Stack.Screen name="userdetails" component={UserDetails} />
+              <Stack.Screen name="debugscreen" component={DebugScreen} />
+              <Stack.Screen name="gamescreen" component={GameScreen} />
+              <Stack.Screen name="gamemodescreen" component={GameModeScreen} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </GestureHandlerRootView>
+      </Provider>
+      {/* </StrictMode> */}
     </>
   );
 }

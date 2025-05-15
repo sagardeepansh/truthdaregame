@@ -1,64 +1,201 @@
-import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useRef } from 'react';
+import { Text, Animated, StyleSheet, View } from 'react-native';
 
-export default function DebugScreen({ navigation }) {
-  const testPress = () => {
-    Alert.alert('Test', 'Button pressed!');
-    console.log('Button pressed'); // For debugging
-  };
+import {
+  Swipeable,
+  GestureHandlerRootView,
+  Pressable,
+} from 'react-native-gesture-handler';
+import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Reanimated, {
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+
+function LeftAction(prog, drag) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('[R] showLeftProgress:', prog.value);
+    console.log('[R] appliedTranslation:', drag.value);
+
+    return {
+      transform: [{ translateX: drag.value - 50 }],
+    };
+  });
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
-        contentContainerStyle={styles.container} 
-        keyboardShouldPersistTaps="handled"
-      >
-        <Pressable
-          style={styles.button}
-          onPress={testPress}
-          activeOpacity={0.7}
-          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-        >
-          <Text style={styles.buttonText}>Press Me (TouchableOpacity)</Text>
-        </Pressable >
-        <TouchableOpacity
-          style={styles.button}
-          onPress={testPress}
-          activeOpacity={0.7}
-          hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-        >
-          <Text style={styles.buttonText}>Press Me (Second Button)</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.leftAction}>Text</Text>
+    </Reanimated.View>
+  );
+}
+
+function RightAction(prog, drag) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('[R] showRightProgress:', prog.value);
+    console.log('[R] appliedTranslation:', drag.value);
+
+    return {
+      transform: [{ translateX: drag.value + 50 }],
+    };
+  });
+
+  return (
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.rightAction}>Text</Text>
+    </Reanimated.View>
+  );
+}
+
+function LegacyLeftAction(prog, drag) {
+  prog.addListener((value) => {
+    console.log('[L] showLeftProgress:', value.value);
+  });
+  drag.addListener((value) => {
+    console.log('[L] appliedTranslation:', value.value);
+  });
+
+  const trans = Animated.subtract(drag, 50);
+
+  return (
+    <Animated.Text
+      style={[
+        styles.leftAction,
+        {
+          transform: [{ translateX: trans }],
+        },
+      ]}>
+      Text
+    </Animated.Text>
+  );
+}
+
+function LegacyRightAction(prog, drag) {
+  prog.addListener((value) => {
+    console.log('[L] showRightProgress:', value.value);
+  });
+  drag.addListener((value) => {
+    console.log('[L] appliedTranslation:', value.value);
+  });
+
+  const trans = Animated.add(drag, 50);
+
+  return (
+    <Animated.Text
+      style={[
+        styles.rightAction,
+        {
+          transform: [{ translateX: trans }],
+        },
+      ]}>
+      Text
+    </Animated.Text>
+  );
+}
+
+export default function DebugScreen() {
+  const reanimatedRef = useRef(null);
+  const legacyRef = useRef(null);
+
+  return (
+    <GestureHandlerRootView>
+      <View style={styles.separator} />
+
+      <View style={styles.controlPanelWrapper}>
+        <Text>Programatical controls</Text>
+        <View style={styles.controlPanel}>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current?.openLeft();
+              legacyRef.current?.openLeft();
+            }}>
+            <Text>open left</Text>
+          </Pressable>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current?.close();
+              legacyRef.current?.close();
+            }}>
+            <Text>close</Text>
+          </Pressable>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current?.reset();
+              legacyRef.current?.reset();
+            }}>
+            <Text>reset</Text>
+          </Pressable>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current?.openRight();
+              legacyRef.current?.openRight();
+            }}>
+            <Text>open right</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.separator} />
+
+      <ReanimatedSwipeable
+        ref={reanimatedRef}
+        containerStyle={styles.swipeable}
+        friction={2}
+        leftThreshold={80}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderLeftActions={LeftAction}
+        renderRightActions={RightAction}>
+        <Text>[Reanimated] Swipe me!</Text>
+      </ReanimatedSwipeable>
+
+      <View style={styles.separator} />
+
+      <Swipeable
+        ref={legacyRef}
+        containerStyle={styles.swipeable}
+        friction={2}
+        leftThreshold={80}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderLeftActions={LegacyLeftAction}
+        renderRightActions={LegacyRightAction}>
+        <Text>[Legacy] Swipe me!</Text>
+      </Swipeable>
+
+      <View style={styles.separator} />
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  leftAction: { width: 50, height: 50, backgroundColor: 'crimson' },
+  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
+  separator: {
+    width: '100%',
+    borderTopWidth: 1,
+  },
+  swipeable: {
+    height: 50,
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+  },
+  controlPanelWrapper: {
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+  },
+  controlPanel: {
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  control: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  button: {
-    padding: 15,
-    backgroundColor: 'blue',
-    borderRadius: 8,
-    margin: 10,
+    height: 40,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
-    minWidth: 200,
-    minHeight: 50,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
   },
 });
