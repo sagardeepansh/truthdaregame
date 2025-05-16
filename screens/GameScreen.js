@@ -8,10 +8,12 @@ import {
     FlatList,
     Animated,
     Easing,
-    Image
+    Image,
+    SafeAreaView
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSelector } from 'react-redux';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const GameScreen = ({ navigation }) => {
     const { users } = useSelector((state) => state.user);
@@ -50,7 +52,6 @@ const GameScreen = ({ navigation }) => {
             navigation.goBack();
         }
     }, []);
-
     const spinWheel = () => {
         setGameState('spinning');
 
@@ -126,6 +127,14 @@ const GameScreen = ({ navigation }) => {
 
     return (
         <LinearGradient colors={['#b41c1c', '#6b1f20']} style={styles.container}>
+            <SafeAreaView>
+                <View style={styles.backiconbox}>
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}>
+                        <Icon name="angle-left" size={20} color="#fff" />
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
             <View style={styles.content}>
                 {/* Current Player Display */}
                 {gameState === 'spin' &&
@@ -147,7 +156,7 @@ const GameScreen = ({ navigation }) => {
                 }
 
                 {/* Game State Management */}
-                {gameState === 'spin' &&  (
+                {gameState === 'spin' && (
                     <View style={styles.spinContainer}>
                         <TouchableOpacity
                             style={styles.spinButton}
@@ -240,6 +249,9 @@ const GameScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    backiconbox: {
+        padding: 20,
     },
     content: {
         flex: 1,

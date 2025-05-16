@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch } from 'react-redux';
 import { setGameType } from '../redux/slices/userSlice';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const GameModeScreen = ({ navigation }) => {
     const dispatch = useDispatch();
@@ -17,15 +18,20 @@ const GameModeScreen = ({ navigation }) => {
             colors={['#b41c1c', '#6b1f20']}
             style={styles.container}
         >
-            <View style={styles.header}>
-                {/* <Image 
-                        source={require('../assets/game-logo.png')}
-                        style={styles.logo}
-                    /> */}
-                <Text style={styles.title}>Select Game Mode</Text>
-            </View>
+            <SafeAreaView>
+                <View style={styles.backiconbox}>
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}>
+                        <Icon name="angle-left" size={20} color="#fff" />
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+           
 
             <View style={styles.modesContainer}>
+                 <View style={styles.header}>
+                <Text style={styles.title}>Select Game Mode</Text>
+            </View>
                 {/* Normal Mode */}
                 <TouchableOpacity
                     style={[styles.modeButton, styles.normalMode]}
@@ -59,13 +65,6 @@ const GameModeScreen = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => navigation.goBack()}
-            >
-                <Text style={styles.backButtonText}>Back</Text>
-            </TouchableOpacity>
         </LinearGradient>
     );
 };
@@ -78,27 +77,22 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
+        // padding: 20,
+        // justifyContent: 'space-between',
+    },
+    backiconbox: {
         padding: 20,
-        justifyContent: 'space-between',
     },
     header: {
-        alignItems: 'center',
-        marginTop: 40,
-    },
-    logo: {
-        width: 120,
-        height: 120,
-        marginBottom: 20,
+        // alignItems: 'center',
+        // marginTop: 40,
     },
     title: {
         color: '#fff',
-        fontSize: 28,
+        fontSize: 22,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 10,
-        textShadowColor: 'rgba(0,0,0,0.5)',
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 5,
     },
     modesContainer: {
         flex: 1,
