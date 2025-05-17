@@ -1,11 +1,9 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Text, View, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import { FreckleFace_400Regular } from '@expo-google-fonts/freckle-face';
 import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 
@@ -16,36 +14,80 @@ import DebugScreen from './screens/DebugScreen';
 import GameScreen from './screens/GameScreen';
 import GameModeScreen from './screens/GameModeScreen';
 
-const Stack = createNativeStackNavigator();
+// Define screen names as constants
+const SCREENS = {
+  SPLASH: 'splash',
+  USER_DETAILS: 'userdetails',
+  DEBUG: 'debugscreen',
+  GAME: 'gamescreen',
+  GAME_MODE: 'gamemodescreen'
+};
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
-    FreckleFace_400Regular,
-    Roboto_400Regular,
-    Roboto_500Medium,
+  const [currentScreen, setCurrentScreen] = useState(SCREENS.SPLASH);
+  const [screenProps, setScreenProps] = useState({});
+  
+  const [fontsLoaded, fontError] = useFonts({
+    'FreckleFace-Regular': FreckleFace_400Regular,
+    'Roboto-Regular': Roboto_400Regular,
+    'Roboto-Medium': Roboto_500Medium,
   });
 
+  // Navigation handler
+  const navigate = (screenName, props = {}) => {
+    setCurrentScreen(screenName);
+    setScreenProps(props);
+  };
+
+  // Font loading state handling
   if (!fontsLoaded) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.loadingContainer}>
         <Text>Loading fonts...</Text>
       </View>
     );
   }
 
+  if (fontError) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Error loading fonts. Please restart the app.</Text>
+      </View>
+    );
+  }
+
+  // Render the current screen based on state
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case SCREENS.SPLASH:
+        return <SplashScreen navigate={navigate} {...screenProps} />;
+      case SCREENS.USER_DETAILS:
+        return <UserDetails navigate={navigate} {...screenProps} />;
+      case SCREENS.DEBUG:
+        return <DebugScreen navigate={navigate} {...screenProps} />;
+      case SCREENS.GAME:
+        return <GameScreen navigate={navigate} {...screenProps} />;
+      case SCREENS.GAME_MODE:
+        return <GameModeScreen navigate={navigate} {...screenProps} />;
+      default:
+        return <SplashScreen navigate={navigate} {...screenProps} />;
+    }
+  };
+
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="splash" screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="splash" component={SplashScreen} />
-            <Stack.Screen name="userdetails" component={UserDetails} />
-            <Stack.Screen name="debugscreen" component={DebugScreen} />
-            <Stack.Screen name="gamescreen" component={GameScreen} />
-            <Stack.Screen name="gamemodescreen" component={GameModeScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        {renderScreen()}
       </GestureHandlerRootView>
     </Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff'
+  }
+});

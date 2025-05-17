@@ -15,7 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const GameScreen = ({ navigation }) => {
+const GameScreen = ({ navigate, ...props }) => {
     const { users } = useSelector((state) => state.user);
     const gameType = useSelector((state) => state.user.gameType);
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -23,7 +23,7 @@ const GameScreen = ({ navigation }) => {
     const [currentTask, setCurrentTask] = useState('');
 
     const [availableTruths, setAvailableTruths] = useState([
-        "What's your most embarrassing moment?",
+        {text: "What's your most embarrassing moment?"},
         "Have you ever cheated on a test?",
         "What's your biggest fear?",
         "Would you rather lose all your money or all your friends?",
@@ -58,7 +58,7 @@ const GameScreen = ({ navigation }) => {
     useEffect(() => {
         if (users.length === 0) {
             Alert.alert("No players!", "Please add players first");
-            navigation.goBack();
+            navigate('userdetails');
         }
     }, []);
     const spinWheel = () => {
@@ -156,7 +156,7 @@ const GameScreen = ({ navigation }) => {
             <SafeAreaView>
                 <View style={styles.backiconbox}>
                     <TouchableOpacity
-                        onPress={() => navigation.goBack()}>
+                        onPress={() => navigate('userdetails')}>
                         <Icon name="angle-left" size={20} color="#fff" />
                     </TouchableOpacity>
                 </View>

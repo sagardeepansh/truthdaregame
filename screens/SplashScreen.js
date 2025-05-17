@@ -3,10 +3,10 @@ import { StyleSheet, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 
-export default function SplashScreen({ navigation }) {
+export default function SplashScreen({ navigate, ...props }) {
     useEffect(() => {
         const timer = setTimeout(() => {
-            navigation.replace('userdetails'); // Use replace to prevent going back to Splash
+            navigate('userdetails'); // Use replace to prevent going back to Splash
         }, 5000); // 5000ms = 5 seconds
 
         return () => clearTimeout(timer); // Clean up the timer on unmount

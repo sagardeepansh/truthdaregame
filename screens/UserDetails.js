@@ -15,7 +15,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { addUser, deleteUser } from '../redux/slices/userSlice';
 
-export default function UserDetails({ navigation }) {
+export default function UserDetails({ navigate, ...props }) {
     const dispatch = useDispatch();
     const { users } = useSelector((state) => state.user);
     const [name, setName] = useState('');
@@ -65,7 +65,7 @@ export default function UserDetails({ navigation }) {
             Alert.alert('Validation Error', `Please add at least two player ${users.length}`);
             return;
         }
-        navigation.navigate('gamemodescreen'); // Replace with your actual game screen name
+        navigate('gamemodescreen'); // Replace with your actual game screen name
     };
 
     const renderRightActions = (id) => (

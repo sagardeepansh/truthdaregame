@@ -5,12 +5,12 @@ import { useDispatch } from 'react-redux';
 import { setGameType } from '../redux/slices/userSlice';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const GameModeScreen = ({ navigation }) => {
+const GameModeScreen = ({ navigate, ...props }) => {
     const dispatch = useDispatch();
 
     const handleSelectGame = (type) => {
         dispatch(setGameType(type));
-        navigation.navigate('gamescreen');
+        navigate('gamescreen');
     };
 
     return (
@@ -21,7 +21,7 @@ const GameModeScreen = ({ navigation }) => {
             <SafeAreaView>
                 <View style={styles.backiconbox}>
                     <TouchableOpacity
-                        onPress={() => navigation.goBack()}>
+                        onPress={() => navigate('userdetails')}>
                         <Icon name="angle-left" size={20} color="#fff" />
                     </TouchableOpacity>
                 </View>
