@@ -21,12 +21,8 @@ const GameScreen = ({ navigation }) => {
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
     const [gameHistory, setGameHistory] = useState([]);
     const [currentTask, setCurrentTask] = useState('');
-    const [gameState, setGameState] = useState('spin'); // 'spin', 'choose', 'task'
-    const [taskType, setTaskType] = useState(''); // 'truth' or 'dare'
-    const [spinValue] = useState(new Animated.Value(0));
 
-    // Sample questions/tasks
-    const questions = [
+    const [availableTruths, setAvailableTruths] = useState([
         "What's your most embarrassing moment?",
         "Have you ever cheated on a test?",
         "What's your biggest fear?",
@@ -34,9 +30,8 @@ const GameScreen = ({ navigation }) => {
         "What's something you've done that you hope nobody finds out about?",
         "Have you ever lied to get out of trouble?",
         "What's the most childish thing you still do?"
-    ];
-
-    const dares = [
+    ]);
+    const [availableDares, setAvailableDares] = useState([
         "Do your best dance for 30 seconds",
         "Let the group choose a new hairstyle for you",
         "Sing a song of the group's choosing",
@@ -44,8 +39,22 @@ const GameScreen = ({ navigation }) => {
         "Let someone draw on your face with a marker",
         "Eat a spoonful of a condiment you dislike",
         "Do an impression of someone in the room"
-    ];
+    ]);
+    const [gameState, setGameState] = useState('spin'); // 'spin', 'choose', 'task'
+    const [taskType, setTaskType] = useState(''); // 'truth' or 'dare'
+    const [spinValue] = useState(new Animated.Value(0));
 
+    useEffect(() => {
+        fetch(`https://truthanddare-backend.vercel.app/api/questions?category=${gameType}&limit=50`) // replace with your API endpoint
+            .then((response) => response.json())
+            .then((json) => {
+                setAvailableDares(json?.dare || []);
+                setAvailableTruths(json?.truth || []);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, []);
     useEffect(() => {
         if (users.length === 0) {
             Alert.alert("No players!", "Please add players first");
@@ -56,35 +65,52 @@ const GameScreen = ({ navigation }) => {
         setGameState('spinning');
 
         spinValue.setValue(0);
-        Animated.timing(
-            spinValue,
-            {
-                toValue: 1,
-                duration: 2000,
-                easing: Easing.out(Easing.cubic),
-                useNativeDriver: true
-            }
-        ).start(() => {
-            setGameState('choose');
-        });
+        const angle = Math.floor(5 + Math.random() * 5) * 360; // 1800° to 3600°
+        Animated.timing(spinValue, {
+            toValue: angle,
+            duration: 2500,
+            easing: Easing.out(Easing.cubic),
+            useNativeDriver: true
+        }).start(() => setGameState('choose'));
     };
 
     const getRandomTruth = () => {
-        const randomIndex = Math.floor(Math.random() * questions.length);
-        const truth = questions[randomIndex];
-        setCurrentTask(truth);
+        if (availableTruths.length === 0) {
+            Alert.alert("No more truths left!");
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * availableTruths.length);
+        const truth = availableTruths[randomIndex];
+
+        // Remove used truth
+        const updatedTruths = [...availableTruths];
+        updatedTruths.splice(randomIndex, 1);
+        setAvailableTruths(updatedTruths);
+
+        setCurrentTask(truth?.text);
         setTaskType('truth');
         setGameState('task');
-        return truth;
     };
 
+
     const getRandomDare = () => {
-        const randomIndex = Math.floor(Math.random() * dares.length);
-        const dare = dares[randomIndex];
-        setCurrentTask(dare);
+        if (availableDares.length === 0) {
+            Alert.alert("No more dares left!");
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * availableDares.length);
+        const dare = availableDares[randomIndex];
+
+        // Remove used dare
+        const updatedDares = [...availableDares];
+        updatedDares.splice(randomIndex, 1);
+        setAvailableDares(updatedDares);
+
+        setCurrentTask(dare?.text);
         setTaskType('dare');
         setGameState('task');
-        return dare;
     };
 
     const handleNextTurn = () => {
@@ -119,8 +145,8 @@ const GameScreen = ({ navigation }) => {
     };
 
     const spin = spinValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0deg', '360deg']
+        inputRange: [0, 3600],
+        outputRange: ['0deg', '3600deg']
     });
 
     const currentPlayer = users[currentPlayerIndex];

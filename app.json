@@ -10,10 +10,17 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#b41c1c"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.deepanshsagar.truthdare",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +34,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      {
+        "fonts": [
+          "node_modules/@expo-google-fonts/freckle-face/FreckleFace_400Regular.ttf",
+          "node_modules/@expo-google-fonts/roboto/Roboto_400Regular.ttf",
+          "node_modules/@expo-google-fonts/roboto/Roboto_500Medium.ttf"
+        ]
+      }
     ],
     "extra": {
       "eas": {
