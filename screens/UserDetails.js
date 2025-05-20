@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -8,6 +8,13 @@ import {
     StyleSheet,
     TouchableOpacity,
     Alert,
+    ImageBackground,
+    SafeAreaView,
+    KeyboardAvoidingView,
+    Platform,
+    Keyboard,
+    ScrollView,
+    Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -95,87 +102,164 @@ export default function UserDetails({ navigate, ...props }) {
         </Swipeable>
     );
 
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: isKeyboardVisible ? 0 : 1,
+            duration: 400,
+            useNativeDriver: true,
+        }).start();
+    }, [isKeyboardVisible, fadeAnim]);
+
+    // useEffect(() => {
+    //     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+    //         setKeyboardVisible(true);
+    //     });
+    //     const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+    //         setKeyboardVisible(false);
+    //     });
+
+    //     return () => {
+    //         showSubscription.remove();
+    //         hideSubscription.remove();
+    //     };
+    // }, []);
+
     return (
-        <LinearGradient
-            colors={['#b41c1c', '#6b1f20']}
-            style={styles.mainContainer}
-        >
-            <View style={styles.container}>
-                <Text style={styles.title}>Add Player</Text>
-
-                <View style={styles.userNameBox}>
-                    <TextInput
-                        style={styles.input}
-                        ref={nameInputRef}
-                        placeholder="Enter name"
-                        value={name}
-                        placeholderTextColor="#999"
-                        onChangeText={setName}
-                        maxLength={20}
-                    // onSubmitEditing={addPlayer}
-                    />
-                    <Pressable
-                        onPress={handleGenderChange}
-                        style={styles.button}
-                    >
-                        <Icon
-                            style={styles.genderIcons}
-                            name={genderIcons[currentIndex]}
-                            size={24}
-                            color="#fff"
-                        />
-                    </Pressable>
-                </View>
-
-                <TouchableOpacity
-                    style={styles.btnAddUser}
-                    onPress={addPlayer}
+        <ImageBackground source={require('../assets/inner-page.png')} style={styles.background} resizeMode="cover" >
+            <SafeAreaView style={styles.container}>
+                <KeyboardAvoidingView
+                    style={styles.container}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0} // optional offset
                 >
-                    <Text style={styles.btnAddUserText}>Add Player</Text>
-                </TouchableOpacity>
+                    <View style={styles.container}>
+                        <View>
+                            <View style={styles.topheadline}>
+                                <Text style={styles.headline}>Truth & Dare</Text>
+                                <Text style={styles.subheadline}>Unlock new comfort </Text>
+                            </View>
+                            <ScrollView disableScrollViewPanResponder={true} contentContainerStyle={{ flexGrow: 1 }}>
+                                <View style={styles.addPlayer}>
+                                    <Text style={styles.title}>ADD PLAYER</Text>
+                                </View>
+                                <View style={styles.userNameBox}>
+                                    <TextInput
+                                        style={styles.input}
+                                        ref={nameInputRef}
+                                        placeholder="Enter name"
+                                        value={name}
+                                        placeholderTextColor="#999"
+                                        onFocus={() => setKeyboardVisible(true)}
+                                        onBlur={() => setKeyboardVisible(false)}
+                                        onChangeText={setName}
+                                        maxLength={20}
+                                    // onSubmitEditing={addPlayer}
+                                    />
+                                    <Pressable
+                                        onPress={handleGenderChange}
+                                    >
+                                        <Icon
+                                            style={styles.genderIcons}
+                                            name={genderIcons[currentIndex]}
+                                            size={45}
+                                            color="#fff"
+                                        />
+                                    </Pressable>
+                                </View>
 
-                {users.length > 0 && (
-                    <>
-                        <Text style={styles.listTitle}>
-                            Player{users.length !== 1 ? 's' : ''} Added
-                        </Text>
-                        <View style={styles.listWrapper}>
-                            <FlatList
-                                data={users}
-                                keyExtractor={(item) => item.id}
-                                renderItem={renderItem}
-                                showsVerticalScrollIndicator={false}
-                            />
+                                {users.length > 0 && (
+                                    <>
+                                        <Text style={styles.listTitle}>
+                                            Player{users.length !== 1 ? 's' : ''} Added
+                                        </Text>
+                                        <View style={styles.listWrapper}>
+                                            <FlatList
+                                                nestedScrollEnabled={true}
+
+                                                data={users}
+                                                keyExtractor={(item) => item.id}
+                                                renderItem={renderItem}
+                                                showsVerticalScrollIndicator={false}
+                                            />
+                                        </View>
+                                    </>
+                                )}
+                            </ScrollView>
                         </View>
-                    </>
-                )}
 
-                <TouchableOpacity
-                    style={[
-                        styles.btnStart,
-                        users.length === 0 && { opacity: 0.7 }
-                    ]}
-                    onPress={startGame}
-                    disabled={users.length === 0}
-                >
-                    <Text style={styles.btnStartText}>Start Game</Text>
-                </TouchableOpacity>
-            </View>
-        </LinearGradient>
+                        {/* <TouchableOpacity
+                        style={[
+                            styles.btnStart,
+                            users.length === 0 && { opacity: 0.7 }
+                        ]}
+                        onPress={startGame}
+                        disabled={users.length === 0}
+                    >
+                        <Text style={styles.btnStartText}>Start Game</Text>
+                    </TouchableOpacity> */}
+                        <View style={[styles.themeBtnBox, isKeyboardVisible && { bottom: 0 }]}>
+                            <Pressable 
+                                onPress={addPlayer} 
+                                style={[styles.themeBtnOutline, isKeyboardVisible && { backgroundColor: '#000' }]}
+                            >
+                                <Text style={styles.themeBtnOutlineText}>ADD PLAYER</Text>
+                            </Pressable>
+                            <Animated.View style={{ opacity: fadeAnim }}>
+                                {!isKeyboardVisible && (
+                                    <Pressable 
+                                        onPress={startGame} 
+                                        style={[styles.themeBtn, users.length === 0 && { opacity: 0.7 }]}
+                                        disabled={users.length === 0}
+                                    >
+                                        <Text style={styles.themeBtnText}>START NOW</Text>
+                                    </Pressable>
+                                )}
+                            </Animated.View>
+                        </View>
+                    </View>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
+        </ImageBackground >
     );
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        backgroundColor: '#141516',
+        paddingHorizontal: 20,
+        overflow:'hidden'
+    },
     mainContainer: {
         flex: 1,
+    },
+    topheadline: {
+        marginBottom: 60,
+        marginTop: 20,
+    },
+    headline: {
+        fontSize: 55,
+        color: '#fff',
+        fontWeight: 700,
+        textAlign: 'center',
+        fontFamily: 'Jersey10-Regular'
+    },
+    subheadline: {
+        fontSize: 16,
+        color: '#fff',
+        fontWeight: 700,
+        textAlign: 'center',
+        fontFamily: 'Roboto-Regular',
     },
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: 20,
-        paddingTop: 40,
-        paddingBottom: 20,
+        // justifyContent: 'center',
+        // paddingTop: 40,
+        // paddingBottom: 20,
     },
     userNameBox: {
         flexDirection: 'row',
@@ -186,33 +270,35 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     genderIcons: {
-        width: 25,
+        width: 55,
         textAlign: 'center',
     },
     title: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
         color: '#fff',
-        marginBottom: 20,
-        textAlign: 'center',
+        fontFamily: 'Roboto-SemiBold',
+        marginBottom: 10,
+        textAlign: 'start',
     },
     input: {
         width: '80%',
-        paddingLeft: 20,
+        paddingLeft: 15,
         fontSize: 18,
         fontWeight: '600',
-        borderRadius: 50,
-        height: 60,
-        backgroundColor: '#fff',
+        borderRadius: 11,
+        color: '#fff',
+        height: 50,
+        backgroundColor: 'rgba(217, 217, 217, 0.18)',
     },
     button: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 50,
-        height: 60,
+        // paddingVertical: 10,
+        // paddingHorizontal: 20,
+        // borderRadius: 50,
+        // height: 60,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#000',
+        // backgroundColor: '#000',
     },
     btnAddUser: {
         paddingVertical: 10,
@@ -231,23 +317,23 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    btnStart: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 50,
-        height: 60,
-        backgroundColor: '#fccb06',
-        marginTop: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-    },
-    btnStartText: {
-        color: '#000',
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
+    // btnStart: {
+    //     paddingVertical: 10,
+    //     paddingHorizontal: 20,
+    //     borderRadius: 50,
+    //     height: 60,
+    //     backgroundColor: '#fccb06',
+    //     marginTop: 20,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     width: '100%',
+    // },
+    // btnStartText: {
+    //     color: '#000',
+    //     fontSize: 18,
+    //     fontWeight: 'bold',
+    //     textAlign: 'center',
+    // },
     listTitle: {
         fontSize: 20,
         fontWeight: 'bold',
@@ -263,11 +349,13 @@ const styles = StyleSheet.create({
     },
     listItem: {
         marginTop: 0,
+        width: '100%',
         paddingVertical: 0,
         borderRadius: 10,
         height: 50,
         borderBottomColor: '#ffffff4d',
         borderBottomWidth: 1,
+        fontFamily: 'Roboto-Regular',
         padding: 10,
         flexDirection: 'row',
         gap: 5,
@@ -294,4 +382,39 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-end',
     },
+    themeBtnOutline: {
+        borderWidth: 1,
+        color: '#fff',
+        padding: 25,
+        borderColor: '#fff',
+        // backgroundColor: '#000000a6',
+        width: '100%',
+        marginBottom: 20,
+        borderRadius: 100
+    },
+    themeBtnOutlineText: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: '#fff',
+        textAlign: 'center',
+        fontFamily: 'Roboto-SemiBold',
+    },
+    themeBtnBox: {
+        position: 'absolute',
+        bottom: 45,
+        width: '100%',
+        borderRadius: 100
+    },
+    themeBtn: {
+        backgroundColor: '#fff',
+        padding: 22,
+        width: '100%',
+        borderRadius: 100
+    },
+    themeBtnText: {
+        fontWeight: 'bold',
+        fontSize: 18,
+        textAlign: 'center',
+        fontFamily: 'Roboto-SemiBold',
+    }
 });

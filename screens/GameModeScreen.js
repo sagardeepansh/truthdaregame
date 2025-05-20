@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ImageBackground, Platform, KeyboardAvoidingView, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch } from 'react-redux';
 import { setGameType } from '../redux/slices/userSlice';
@@ -14,113 +14,126 @@ const GameModeScreen = ({ navigate, ...props }) => {
     };
 
     return (
-        <LinearGradient
-            colors={['#b41c1c', '#6b1f20']}
-            style={styles.container}
-        >
-            <SafeAreaView>
+        <ImageBackground source={require('../assets/inner-page.png')} style={styles.background} resizeMode="cover" >
+            {/* <SafeAreaView>
                 <View style={styles.backiconbox}>
                     <TouchableOpacity
                         onPress={() => navigate('userdetails')}>
                         <Icon name="angle-left" size={20} color="#fff" />
                     </TouchableOpacity>
                 </View>
-            </SafeAreaView>
-           
+            </SafeAreaView> */}
+            <SafeAreaView style={styles.container}>
+                <View style={styles.container}>
+                    <View>
+                        <View style={styles.topheadline}>
+                            <Text style={styles.headline}>Truth & Dare</Text>
+                            <Text style={styles.subheadline}>Unlock new comfort </Text>
+                        </View>
 
-            <View style={styles.modesContainer}>
-                 <View style={styles.header}>
-                <Text style={styles.title}>Select Game Mode</Text>
-            </View>
-                {/* Normal Mode */}
-                <TouchableOpacity
-                    style={[styles.modeButton, styles.normalMode]}
-                    onPress={() => handleSelectGame('normal')}
-                >
-                    {/* <Image 
-                            source={require('../assets/normal-mode-icon.png')}
-                            style={styles.modeIcon}
-                        /> */}
-                    <Text style={styles.modeText}>Normal Mode</Text>
-                    <Text style={styles.modeDescription}>
-                        Family-friendly questions and dares
-                    </Text>
-                </TouchableOpacity>
+                        <View style={styles.modesContainer}>
+                            <View >
+                                <Text style={styles.title}>SELECT MODE</Text>
+                            </View>
+                            {/* Normal Mode */}
+                            <TouchableOpacity
+                                style={[styles.modeButton, styles.normalMode]}
+                                onPress={() => handleSelectGame('normal')}
+                            >
+                                <Image
+                                    source={require('../assets/high-five.png')}
+                                    style={styles.modeIcon}
+                                />
+                                <Text style={styles.modeText}>Playing with Friends</Text>
+                                <Text style={styles.modeDescription}>
+                                    Fun and family-friendly truths and dares for everyone to enjoy!
+                                </Text>
+                            </TouchableOpacity>
 
-                {/* Adult Mode */}
-                <TouchableOpacity
-                    style={[styles.modeButton, styles.adultMode]}
-                    onPress={() => handleSelectGame('adult')}
-                >
-                    {/* <Image 
-                            source={require('../assets/adult-mode-icon.png')}
-                            style={styles.modeIcon}
-                        /> */}
-                    <Text style={styles.modeText}>Adult Mode</Text>
-                    <Text style={styles.modeDescription}>
-                        18+ only. Naughty questions and dares
-                    </Text>
-                    <View style={styles.ageRestriction}>
-                        <Text style={styles.ageRestrictionText}>18+</Text>
+                            {/* Adult Mode */}
+                            <TouchableOpacity
+                                style={[styles.modeButton, styles.adultMode]}
+                                onPress={() => handleSelectGame('adult')}
+                            >
+                                <Image
+                                    source={require('../assets/couple-icon.png')}
+                                    style={styles.modeIcon}
+                                />
+                                <Text style={styles.modeText}>Couple Zone (+18)</Text>
+                                <Text style={styles.modeDescription}>
+                                    Spicy and bold truths and dares for adults only. Enter if you dare!
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </TouchableOpacity>
-            </View>
-        </LinearGradient>
+                </View>
+            </SafeAreaView>
+        </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
     background: {
         flex: 1,
-        width: '100%',
-        height: '100%',
+        backgroundColor: '#141516',
+        paddingHorizontal: 20,
+        overflow:'hidden'
     },
     container: {
         flex: 1,
-        // padding: 20,
-        // justifyContent: 'space-between',
     },
     backiconbox: {
         padding: 20,
     },
-    header: {
-        // alignItems: 'center',
-        // marginTop: 40,
+    topheadline: {
+        marginBottom: 60,
+        marginTop: 20,
+    },
+    headline: {
+        fontSize: 55,
+        color: '#fff',
+        fontWeight: 700,
+        textAlign: 'center',
+        fontFamily: 'Jersey10-Regular'
+    },
+    subheadline: {
+        fontSize: 16,
+        color: '#fff',
+        fontWeight: 700,
+        textAlign: 'center',
+        fontFamily: 'Roboto-Regular',
     },
     title: {
-        color: '#fff',
         fontSize: 22,
         fontWeight: 'bold',
-        textAlign: 'center',
+        color: '#fff',
+        fontFamily: 'Roboto-SemiBold',
         marginBottom: 10,
+        textAlign: 'start',
     },
     modesContainer: {
-        flex: 1,
+        // flex: 1,
         justifyContent: 'center',
-        paddingHorizontal: 20,
     },
     modeButton: {
         borderRadius: 20,
         padding: 25,
-        marginVertical: 15,
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 5,
+        borderWidth: 1.5,
+        borderColor: '#AC1C1C',
+        marginBottom: 20,
+        borderTopRightRadius: 60,
     },
     normalMode: {
-        backgroundColor: '#4CAF50', // Green
+         backgroundColor: '#00000036', 
     },
     adultMode: {
-        backgroundColor: '#F44336', // Red
-        position: 'relative',
+        backgroundColor: '#00000036', 
     },
     modeIcon: {
         width: 60,
         height: 60,
-        marginBottom: 15,
+        marginBottom: 10,
     },
     modeText: {
         color: '#fff',
@@ -130,26 +143,8 @@ const styles = StyleSheet.create({
     },
     modeDescription: {
         color: 'rgba(255,255,255,0.8)',
-        fontSize: 16,
+        fontSize: 15,
         textAlign: 'center',
-    },
-    ageRestriction: {
-        position: 'absolute',
-        top: -10,
-        right: -10,
-        backgroundColor: '#000',
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: '#fff',
-    },
-    ageRestrictionText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 16,
     },
     backButton: {
         alignSelf: 'center',

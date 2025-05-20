@@ -1,201 +1,60 @@
-import React, { useRef } from 'react';
-import { Text, Animated, StyleSheet, View } from 'react-native';
-
+import React, { useState } from 'react';
 import {
-  Swipeable,
-  GestureHandlerRootView,
-  Pressable,
-} from 'react-native-gesture-handler';
-import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
-import Reanimated, {
-  useAnimatedStyle,
-} from 'react-native-reanimated';
-
-function LeftAction(prog, drag) {
-  const styleAnimation = useAnimatedStyle(() => {
-    console.log('[R] showLeftProgress:', prog.value);
-    console.log('[R] appliedTranslation:', drag.value);
-
-    return {
-      transform: [{ translateX: drag.value - 50 }],
-    };
-  });
-
-  return (
-    <Reanimated.View style={styleAnimation}>
-      <Text style={styles.leftAction}>Text</Text>
-    </Reanimated.View>
-  );
-}
-
-function RightAction(prog, drag) {
-  const styleAnimation = useAnimatedStyle(() => {
-    console.log('[R] showRightProgress:', prog.value);
-    console.log('[R] appliedTranslation:', drag.value);
-
-    return {
-      transform: [{ translateX: drag.value + 50 }],
-    };
-  });
-
-  return (
-    <Reanimated.View style={styleAnimation}>
-      <Text style={styles.rightAction}>Text</Text>
-    </Reanimated.View>
-  );
-}
-
-function LegacyLeftAction(prog, drag) {
-  prog.addListener((value) => {
-    console.log('[L] showLeftProgress:', value.value);
-  });
-  drag.addListener((value) => {
-    console.log('[L] appliedTranslation:', value.value);
-  });
-
-  const trans = Animated.subtract(drag, 50);
-
-  return (
-    <Animated.Text
-      style={[
-        styles.leftAction,
-        {
-          transform: [{ translateX: trans }],
-        },
-      ]}>
-      Text
-    </Animated.Text>
-  );
-}
-
-function LegacyRightAction(prog, drag) {
-  prog.addListener((value) => {
-    console.log('[L] showRightProgress:', value.value);
-  });
-  drag.addListener((value) => {
-    console.log('[L] appliedTranslation:', value.value);
-  });
-
-  const trans = Animated.add(drag, 50);
-
-  return (
-    <Animated.Text
-      style={[
-        styles.rightAction,
-        {
-          transform: [{ translateX: trans }],
-        },
-      ]}>
-      Text
-    </Animated.Text>
-  );
-}
+  View,
+  TextInput,
+  Button,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from 'react-native';
 
 export default function DebugScreen() {
-  const reanimatedRef = useRef(null);
-  const legacyRef = useRef(null);
+  const [text, setText] = useState('');
 
   return (
-    <GestureHandlerRootView>
-      <View style={styles.separator} />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0} // optional offset
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.inner}>
+          <TextInput
+            style={styles.input}
+            placeholder="Type something..."
+            value={text}
+            onChangeText={setText}
+          />
 
-      <View style={styles.controlPanelWrapper}>
-        <Text>Programatical controls</Text>
-        <View style={styles.controlPanel}>
-          <Pressable
-            style={styles.control}
-            onPress={() => {
-              reanimatedRef.current?.openLeft();
-              legacyRef.current?.openLeft();
-            }}>
-            <Text>open left</Text>
-          </Pressable>
-          <Pressable
-            style={styles.control}
-            onPress={() => {
-              reanimatedRef.current?.close();
-              legacyRef.current?.close();
-            }}>
-            <Text>close</Text>
-          </Pressable>
-          <Pressable
-            style={styles.control}
-            onPress={() => {
-              reanimatedRef.current?.reset();
-              legacyRef.current?.reset();
-            }}>
-            <Text>reset</Text>
-          </Pressable>
-          <Pressable
-            style={styles.control}
-            onPress={() => {
-              reanimatedRef.current?.openRight();
-              legacyRef.current?.openRight();
-            }}>
-            <Text>open right</Text>
-          </Pressable>
+          {/* Stick-to-keyboard button */}
+          <View style={styles.buttonContainer}>
+            <Button title="Submit" onPress={() => console.log(text)} />
+          </View>
         </View>
-      </View>
-
-      <View style={styles.separator} />
-
-      <ReanimatedSwipeable
-        ref={reanimatedRef}
-        containerStyle={styles.swipeable}
-        friction={2}
-        leftThreshold={80}
-        enableTrackpadTwoFingerGesture
-        rightThreshold={40}
-        renderLeftActions={LeftAction}
-        renderRightActions={RightAction}>
-        <Text>[Reanimated] Swipe me!</Text>
-      </ReanimatedSwipeable>
-
-      <View style={styles.separator} />
-
-      <Swipeable
-        ref={legacyRef}
-        containerStyle={styles.swipeable}
-        friction={2}
-        leftThreshold={80}
-        enableTrackpadTwoFingerGesture
-        rightThreshold={40}
-        renderLeftActions={LegacyLeftAction}
-        renderRightActions={LegacyRightAction}>
-        <Text>[Legacy] Swipe me!</Text>
-      </Swipeable>
-
-      <View style={styles.separator} />
-    </GestureHandlerRootView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  leftAction: { width: 50, height: 50, backgroundColor: 'crimson' },
-  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
-  separator: {
-    width: '100%',
-    borderTopWidth: 1,
-  },
-  swipeable: {
-    height: 50,
-    backgroundColor: 'papayawhip',
-    alignItems: 'center',
-  },
-  controlPanelWrapper: {
-    backgroundColor: 'papayawhip',
-    alignItems: 'center',
-  },
-  controlPanel: {
-    backgroundColor: 'papayawhip',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  control: {
+  container: {
     flex: 1,
-    height: 40,
-    borderWidth: StyleSheet.hairlineWidth,
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  inner: {
+    flex: 1,
+    justifyContent: 'flex-end', // keep button at bottom
+  },
+  input: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    margin: 16,
+    padding: 12,
+  },
+  buttonContainer: {
+    padding: 16,
+    backgroundColor: '#fff',
   },
 });

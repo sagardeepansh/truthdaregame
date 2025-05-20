@@ -9,7 +9,9 @@ import {
     Animated,
     Easing,
     Image,
-    SafeAreaView
+    SafeAreaView,
+    ImageBackground,
+    Pressable
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -23,7 +25,7 @@ const GameScreen = ({ navigate, ...props }) => {
     const [currentTask, setCurrentTask] = useState('');
 
     const [availableTruths, setAvailableTruths] = useState([
-        {text: "What's your most embarrassing moment?"},
+        { text: "What's your most embarrassing moment?" },
         "Have you ever cheated on a test?",
         "What's your biggest fear?",
         "Would you rather lose all your money or all your friends?",
@@ -152,103 +154,90 @@ const GameScreen = ({ navigate, ...props }) => {
     const currentPlayer = users[currentPlayerIndex];
 
     return (
-        <LinearGradient colors={['#b41c1c', '#6b1f20']} style={styles.container}>
-            <SafeAreaView>
-                <View style={styles.backiconbox}>
-                    <TouchableOpacity
-                        onPress={() => navigate('userdetails')}>
-                        <Icon name="angle-left" size={20} color="#fff" />
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-            <View style={styles.content}>
-                {/* Current Player Display */}
-                {gameState === 'spin' &&
-                    <View style={styles.playerContainer}>
-                        <Text style={styles.turnText}>Tap to</Text>
-                        <Text style={styles.playerName}>Spin the bottle</Text>
-                        <Image
-                            source={require('../assets/bottle.png')}
-                            style={styles.image}
-                            resizeMode="contain" // or "cover", "stretch", etc.
-                        />
+        <ImageBackground source={require('../assets/inner-page.png')} style={styles.background} resizeMode="cover" >
+            <SafeAreaView style={styles.container}>
+                <View style={styles.content}>
+                    <View style={styles.topheadline}>
+                        <Text style={styles.headline}>Truth & Dare</Text>
+                        <Text style={styles.subheadline}>Unlock new comfort </Text>
                     </View>
-                }
-                {gameState !== 'spin' && gameState !== 'spinning' &&
-                    <View style={styles.playerContainer}>
-                        <Text style={styles.turnText}>It's</Text>
-                        <Text style={styles.playerName}>{currentPlayer?.name}'s turn</Text>
-                    </View>
-                }
-
-                {/* Game State Management */}
-                {gameState === 'spin' && (
-                    <View style={styles.spinContainer}>
-                        <TouchableOpacity
-                            style={styles.spinButton}
-                            onPress={spinWheel}
-                        >
-                            <Text style={styles.spinButtonText}>SPIN</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-
-                {gameState === 'spinning' && (
-                    <View style={styles.spinWheelContainer}>
-                        <Animated.View
-                            style={[
-                                // styles.spinWheel,
-                                { transform: [{ rotate: spin }] }
-                            ]}
-                        >
+                    {/* Current Player Display */}
+                    {gameState === 'spin' &&
+                        <View style={styles.playerContainer}>
+                            <Text style={styles.SpinText}>Tap SPIN</Text>
+                            <Text style={styles.SpinTextPara}>let destiny decide!</Text>
                             <Image
                                 source={require('../assets/bottle.png')}
                                 style={styles.image}
                                 resizeMode="contain" // or "cover", "stretch", etc.
                             />
-                        </Animated.View>
-                    </View>
-                )}
+                        </View>
+                    }
+                    {gameState !== 'spin' && gameState !== 'spinning' &&
+                        <View style={styles.playerContainer}>
+                            <Text style={styles.playerName}>{currentPlayer?.name}'s turn</Text>
+                        </View>
+                    }
 
-                {gameState === 'choose' && (
-                    <View style={styles.selectionContainer}>
-                        <Text style={styles.promptText}>Choose a challenge</Text>
-                        <View style={styles.challengeButtons}>
+                    {/* Game State Management */}
+                    {/* {gameState === 'spin' && (
+                        <View style={styles.spinContainer}>
                             <TouchableOpacity
-                                style={[styles.challengeButton, styles.truthButton]}
-                                onPress={getRandomTruth}
+                                style={styles.spinButton}
+                                onPress={spinWheel}
                             >
-                                <Text style={styles.challengeButtonText}>Truth</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.challengeButton, styles.dareButton]}
-                                onPress={getRandomDare}
-                            >
-                                <Text style={styles.challengeButtonText}>Dare</Text>
+                                <Text style={styles.spinButtonText}>SPIN</Text>
                             </TouchableOpacity>
                         </View>
-                    </View>
-                )}
+                    )} */}
 
-                {gameState === 'task' && (
-                    <View style={styles.taskContainer}>
-                        <Text style={styles.taskTypeText}>
-                            {taskType === 'truth' ? 'TRUTH' : 'DARE'}
-                        </Text>
-                        <Text style={styles.taskText}>{currentTask}</Text>
-                        <TouchableOpacity
-                            style={styles.actionButton}
-                            onPress={handleNextTurn}
-                        >
-                            <Text style={styles.actionButtonText}>
-                                Next Player
+                    {gameState === 'spinning' && (
+                        <View style={styles.spinWheelContainer}>
+                            <Animated.View
+                                style={[
+                                    // styles.spinWheel,
+                                    { transform: [{ rotate: spin }] }
+                                ]}
+                            >
+                                <Image
+                                    source={require('../assets/bottle.png')}
+                                    style={styles.image}
+                                    resizeMode="contain" // or "cover", "stretch", etc.
+                                />
+                            </Animated.View>
+                        </View>
+                    )}
+
+                    {gameState === 'choose' && (
+                        <View style={styles.selectionContainer}>
+                            <View style={styles.themeBtnBoxTD}>
+                                <TouchableOpacity
+                                    style={[styles.themeBtn]}
+                                    onPress={getRandomTruth}
+                                >
+                                    <Text style={styles.themeBtnText}>TRUTH</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.themeBtn]}
+                                    onPress={getRandomDare}
+                                >
+                                    <Text style={styles.themeBtnText}>DARE</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )}
+
+                    {gameState === 'task' && (
+                        <View style={styles.taskContainer}>
+                            <Text style={styles.taskTypeText}>
+                                {taskType === 'truth' ? 'Truth' : 'Dare'}
                             </Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
+                            <Text style={styles.taskText}>{currentTask}</Text>
+                        </View>
+                    )}
 
-                {/* Game History */}
-                {/* {gameHistory.length > 0 && (
+                    {/* Game History */}
+                    {/* {gameHistory.length > 0 && (
                     <View style={styles.historyContainer}>
                         <Text style={styles.historyTitle}>Game History</Text>
                         <FlatList
@@ -267,27 +256,81 @@ const GameScreen = ({ navigate, ...props }) => {
                         />
                     </View>
                 )} */}
-            </View>
-        </LinearGradient>
+                    {gameState === 'spin' && (
+                        <View style={styles.themeBtnBox} >
+                            <Pressable
+                                style={styles.themeBtn}
+                                onPress={spinWheel}
+                            >
+                                <Text style={styles.themeBtnText}>SPIN</Text>
+                            </Pressable>
+                        </View>
+                    )}
+                    {gameState === 'task' && (
+                        <View style={styles.themeBtnBox} >
+                            <Pressable
+                                style={styles.themeBtn}
+                                onPress={handleNextTurn}
+                            >
+                                <Text style={styles.themeBtnText}>NEXT TURN</Text>
+                            </Pressable>
+                        </View>
+                    )}
+                </View>
+            </SafeAreaView>
+        </ImageBackground >
     );
 };
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        backgroundColor: '#141516',
+        paddingHorizontal: 20,
+        overflow: 'hidden'
+    },
     container: {
         flex: 1,
+    },
+    content: {
+        flex: 1,
+    },
+    SpinText: {
+        color: '#fff',
+        fontSize: 32,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+    SpinTextPara: {
+        color: '#fff',
+        fontSize: 24,
+        fontFamily: 'Roboto-Light',
+        marginBottom: 15,
     },
     backiconbox: {
         padding: 20,
     },
-    content: {
-        flex: 1,
-        padding: 20,
-        justifyContent: 'center',
-        alignItems: 'center'
+    topheadline: {
+        marginBottom: 60,
+        marginTop: 20,
+    },
+    headline: {
+        fontSize: 55,
+        color: '#fff',
+        fontWeight: 700,
+        textAlign: 'center',
+        fontFamily: 'Jersey10-Regular'
+    },
+    subheadline: {
+        fontSize: 16,
+        color: '#fff',
+        fontWeight: 700,
+        textAlign: 'center',
+        fontFamily: 'Roboto-Regular',
     },
     playerContainer: {
         alignItems: 'center',
-        marginVertical: 15,
+        marginVertical: 0,
     },
     turnText: {
         color: '#fff',
@@ -305,26 +348,35 @@ const styles = StyleSheet.create({
         marginVertical: 40,
     },
     image: {
+        marginTop: 70,
         width: 200,
         height: 200,
     },
-    spinButton: {
-        backgroundColor: '#fccb06',
-        padding: 0,
-        borderRadius: 50,
-        width: 150,
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
+    themeBtnBoxTD: {
+        width: '100%',
     },
-    spinButtonText: {
-        color: '#000',
-        fontSize: 24,
+    themeBtnBox: {
+        position: 'absolute',
+        bottom: 45,
+        width: '100%',
+        borderRadius: 100
+    },
+    themeBtn: {
+        backgroundColor: '#fff',
+        padding: 22,
+        marginVertical: 10,
+        width: '100%',
+        borderRadius: 100
+    },
+    themeBtnText: {
         fontWeight: 'bold',
+        fontSize: 18,
+        textAlign: 'center',
+        fontFamily: 'Roboto-SemiBold',
     },
     spinWheelContainer: {
         alignItems: 'center',
-        marginVertical: 40,
+        marginVertical:80,
     },
     spinWheel: {
         width: 200,
@@ -359,32 +411,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    challengeButtons: {
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        width: '100%',
-    },
-    challengeButton: {
-        padding: 15,
-        marginBottom: 30,
-        borderRadius: 50,
-        width: '200',
-        alignItems: 'center',
-    },
-    truthButton: {
-        backgroundColor: '#4285F4', // Blue for truth
-    },
-    dareButton: {
-        backgroundColor: '#EA4335', // Red for dare
-    },
     challengeButtonText: {
         color: '#fff',
         fontSize: 20,
         fontWeight: 'bold',
     },
     taskContainer: {
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        padding: 20,
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        padding: 30,
         borderRadius: 15,
         marginVertical: 20,
         minHeight: 150,
@@ -392,17 +426,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     taskTypeText: {
-        color: '#fccb06',
-        fontSize: 18,
-        fontWeight: 'bold',
+        color: '#fff',
+        fontSize: 19,
+        fontWeight: '800',
+        // fontFamily: 'Roboto-SemiBold',
         textAlign: 'center',
         marginBottom: 10,
     },
     taskText: {
         color: '#fff',
-        fontSize: 22,
+        fontSize: 24,
         textAlign: 'center',
         fontWeight: '600',
+        fontFamily: 'Roboto-Light',
         marginBottom: 20,
     },
     actionButton: {

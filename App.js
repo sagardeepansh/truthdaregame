@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-import { FreckleFace_400Regular } from '@expo-google-fonts/freckle-face';
-import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
+import { Roboto_400Regular, Roboto_500Medium, Roboto_600SemiBold, Roboto_300Light } from '@expo-google-fonts/roboto';
+import { Jersey10_400Regular } from '@expo-google-fonts/jersey-10';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
@@ -27,11 +27,14 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState(SCREENS.SPLASH);
   const [screenProps, setScreenProps] = useState({});
   
-  const [fontsLoaded, fontError] = useFonts({
-    'FreckleFace-Regular': FreckleFace_400Regular,
-    'Roboto-Regular': Roboto_400Regular,
-    'Roboto-Medium': Roboto_500Medium,
-  });
+  const [fontsLoaded] = useFonts({
+  'Roboto-Light': Roboto_300Light,
+  'Roboto-Regular': Roboto_400Regular,
+  'Roboto-Medium': Roboto_500Medium,
+  'Roboto-SemiBold': Roboto_600SemiBold,
+  'Jersey10-Regular': Jersey10_400Regular,
+});
+
 
   // Navigation handler
   const navigate = (screenName, props = {}) => {
@@ -48,13 +51,7 @@ export default function App() {
     );
   }
 
-  if (fontError) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Error loading fonts. Please restart the app.</Text>
-      </View>
-    );
-  }
+ 
 
   // Render the current screen based on state
   const renderScreen = () => {
