@@ -12,6 +12,7 @@ import {
     SafeAreaView,
     KeyboardAvoidingView,
     Platform,
+    BackHandler,
     Keyboard,
     ScrollView,
     Animated,
@@ -21,13 +22,17 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { addUser, deleteUser } from '../redux/slices/userSlice';
+import BackButton from './components/BackButton';
+import { Image } from 'react-native';
 
-export default function UserDetails({ navigate, ...props }) {
+export default function UserDetails({ navigate, goBack }) {
     const dispatch = useDispatch();
     const { users } = useSelector((state) => state.user);
     const [name, setName] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
     const nameInputRef = React.useRef(null);
+
+
 
 
     const genders = ['male', 'female', 'trans'];
@@ -138,12 +143,19 @@ export default function UserDetails({ navigate, ...props }) {
                     <View style={styles.container}>
                         <View>
                             <View style={styles.topheadline}>
-                                <Text style={styles.headline}>Truth & Dare</Text>
+                                <BackButton onPress={goBack} />
+                                <Image
+                                    source={require('../assets/logo.png')}
+                                    style={styles.logo}
+                                />
+                                {/* <Text style={styles.headline}>Truth & Dare</Text> */}
                                 <Text style={styles.subheadline}>Unlock new comfort </Text>
+
                             </View>
                             <ScrollView disableScrollViewPanResponder={true} contentContainerStyle={{ flexGrow: 1 }}>
                                 <View style={styles.addPlayer}>
                                     <Text style={styles.title}>ADD PLAYER</Text>
+
                                 </View>
                                 <View style={styles.userNameBox}>
                                     <TextInput
@@ -172,9 +184,15 @@ export default function UserDetails({ navigate, ...props }) {
 
                                 {users.length > 0 && (
                                     <>
-                                        <Text style={styles.listTitle}>
-                                            Player{users.length !== 1 ? 's' : ''} Added
-                                        </Text>
+                                        <View style={styles.listTitleBox}>
+                                            <Text style={styles.listTitle}>
+                                                Player{users.length !== 1 ? 's' : ''} Added
+                                            </Text>
+                                            <Text style={styles.listSubheadline}>
+                                                Left swipe to delete
+                                            </Text>
+                                        </View>
+
                                         <View style={styles.listWrapper}>
                                             <FlatList
                                                 nestedScrollEnabled={true}
@@ -201,16 +219,17 @@ export default function UserDetails({ navigate, ...props }) {
                         <Text style={styles.btnStartText}>Start Game</Text>
                     </TouchableOpacity> */}
                         <View style={[styles.themeBtnBox, isKeyboardVisible && { bottom: 0 }]}>
-                            <Pressable 
-                                onPress={addPlayer} 
+
+                            <Pressable
+                                onPress={addPlayer}
                                 style={[styles.themeBtnOutline, isKeyboardVisible && { backgroundColor: '#000' }]}
                             >
                                 <Text style={styles.themeBtnOutlineText}>ADD PLAYER</Text>
                             </Pressable>
                             <Animated.View style={{ opacity: fadeAnim }}>
                                 {!isKeyboardVisible && (
-                                    <Pressable 
-                                        onPress={startGame} 
+                                    <Pressable
+                                        onPress={startGame}
                                         style={[styles.themeBtn, users.length === 0 && { opacity: 0.7 }]}
                                         disabled={users.length === 0}
                                     >
@@ -231,7 +250,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#141516',
         paddingHorizontal: 20,
-        overflow:'hidden'
+        overflow: 'hidden'
     },
     mainContainer: {
         flex: 1,
@@ -269,9 +288,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         width: '100%',
     },
-    genderIcons: {
-        width: 55,
-        textAlign: 'center',
+    backButton: {
+        width: 50,
+        textAlign: 'left',
+        position: 'absolute',
+        left: 0,
+        top: 20,
+        zIndex: 999,
     },
     title: {
         fontSize: 22,
@@ -334,6 +357,12 @@ const styles = StyleSheet.create({
     //     fontWeight: 'bold',
     //     textAlign: 'center',
     // },
+    listTitleBox: {
+        alignItems: 'flex-end',
+        flexDirection: 'row',
+        gap: 5,
+        justifyContent: 'space-between',
+    },
     listTitle: {
         fontSize: 20,
         fontWeight: 'bold',
@@ -341,6 +370,11 @@ const styles = StyleSheet.create({
         marginTop: 30,
         marginBottom: 10,
         alignSelf: 'flex-start',
+    },
+    listSubheadline: {
+        fontSize: 12,
+        color: '#ffffffad',
+        marginBottom: 10,
     },
     listWrapper: {
         flex: 1,
@@ -367,7 +401,7 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
     rightAction: {
-        backgroundColor: 'red',
+        // backgroundColor: 'red',
         justifyContent: 'center',
         alignItems: 'flex-end',
         paddingHorizontal: 20,
@@ -416,5 +450,10 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
         fontFamily: 'Roboto-SemiBold',
-    }
+    },
+    logo: {
+        maxWidth: 230,
+        margin: 'auto',
+        objectFit: 'contain'
+    },
 });

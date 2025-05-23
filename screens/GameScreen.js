@@ -16,8 +16,9 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import BackButton from './components/BackButton';
 
-const GameScreen = ({ navigate, ...props }) => {
+const GameScreen = ({ navigate, goBack }) => {
     const { users } = useSelector((state) => state.user);
     const gameType = useSelector((state) => state.user.gameType);
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -114,6 +115,17 @@ const GameScreen = ({ navigate, ...props }) => {
         setTaskType('dare');
         setGameState('task');
     };
+    const confirmBack = () => {
+        Alert.alert(
+            'Exit Game',
+            'Are you sure you want to exit the game?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Go back', onPress: () => goBack() }
+            ]
+        );
+
+    }
 
     const handleNextTurn = () => {
         // Ensure there are players
@@ -158,7 +170,12 @@ const GameScreen = ({ navigate, ...props }) => {
             <SafeAreaView style={styles.container}>
                 <View style={styles.content}>
                     <View style={styles.topheadline}>
-                        <Text style={styles.headline}>Truth & Dare</Text>
+                        <BackButton onPress={confirmBack} />
+                        {/* <Text style={styles.headline}>Truth & Dare</Text> */}
+                        <Image
+                            source={require('../assets/logo.png')}
+                            style={styles.logo}
+                        />
                         <Text style={styles.subheadline}>Unlock new comfort </Text>
                     </View>
                     {/* Current Player Display */}
@@ -166,11 +183,16 @@ const GameScreen = ({ navigate, ...props }) => {
                         <View style={styles.playerContainer}>
                             <Text style={styles.SpinText}>Tap SPIN</Text>
                             <Text style={styles.SpinTextPara}>let destiny decide!</Text>
-                            <Image
-                                source={require('../assets/bottle.png')}
-                                style={styles.image}
-                                resizeMode="contain" // or "cover", "stretch", etc.
-                            />
+                            <Pressable
+                                // style={styles.themeBtn}
+                                onPress={spinWheel}
+                            >
+                                <Image
+                                    source={require('../assets/bottle.png')}
+                                    style={styles.image}
+                                    resizeMode="contain" // or "cover", "stretch", etc.
+                                />
+                            </Pressable>
                         </View>
                     }
                     {gameState !== 'spin' && gameState !== 'spinning' &&
@@ -376,7 +398,7 @@ const styles = StyleSheet.create({
     },
     spinWheelContainer: {
         alignItems: 'center',
-        marginVertical:80,
+        marginVertical: 80,
     },
     spinWheel: {
         width: 200,
@@ -484,6 +506,11 @@ const styles = StyleSheet.create({
     },
     historyTask: {
         color: '#fff',
+    },
+    logo: {
+        maxWidth: 230,
+        margin: 'auto',
+        objectFit: 'contain'
     },
 });
 

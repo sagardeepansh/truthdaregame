@@ -4,8 +4,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch } from 'react-redux';
 import { setGameType } from '../redux/slices/userSlice';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import BackButton from './components/BackButton';
 
-const GameModeScreen = ({ navigate, ...props }) => {
+const GameModeScreen = ({ navigate, goBack }) => {
     const dispatch = useDispatch();
 
     const handleSelectGame = (type) => {
@@ -27,7 +28,12 @@ const GameModeScreen = ({ navigate, ...props }) => {
                 <View style={styles.container}>
                     <View>
                         <View style={styles.topheadline}>
-                            <Text style={styles.headline}>Truth & Dare</Text>
+                            <BackButton onPress={goBack} />
+                            {/* <Text style={styles.headline}>Truth & Dare</Text> */}
+                            <Image
+                                source={require('../assets/logo.png')}
+                                style={styles.logo}
+                            />
                             <Text style={styles.subheadline}>Unlock new comfort </Text>
                         </View>
 
@@ -77,7 +83,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#141516',
         paddingHorizontal: 20,
-        overflow:'hidden'
+        overflow: 'hidden'
     },
     container: {
         flex: 1,
@@ -103,6 +109,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontFamily: 'Roboto-Regular',
     },
+    logo: {
+        maxWidth: 230,
+        margin: 'auto',
+        objectFit: 'contain'
+    },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
@@ -125,10 +136,10 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 60,
     },
     normalMode: {
-         backgroundColor: '#00000036', 
+        backgroundColor: '#00000036',
     },
     adultMode: {
-        backgroundColor: '#00000036', 
+        backgroundColor: '#00000036',
     },
     modeIcon: {
         width: 60,

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Text, ImageBackground, Pressable } from 'react-native';
+import { StyleSheet, View, Text, ImageBackground, Pressable, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 
@@ -16,7 +16,11 @@ export default function SplashScreen({ navigate, ...props }) {
         <ImageBackground source={require('../assets/splash-bg.png')} style={styles.background} resizeMode="cover" >
             <View style={styles.container}>
                 <View>
-                    <Text style={styles.headline}>Truth & Dare</Text>
+                    {/* <Text style={styles.headline}>Truth & Dare</Text> */}
+                    <Image
+                        source={require('../assets/logo.png')}
+                        style={styles.logo}
+                    />
                     <Text style={styles.subheadline}>Unlock new comfort</Text>
                 </View>
                 <View style={styles.themeBtnBox}>
@@ -37,12 +41,16 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#141516',
         paddingHorizontal: 20,
-        overflow:'hidden'
+        overflow: 'hidden'
     },
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    logo:{
+        maxWidth:250,
+        objectFit:'contain'
     },
     headline: {
         fontSize: 55,
