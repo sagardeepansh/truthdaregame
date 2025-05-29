@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ImageBackground, Platform, KeyboardAvoidingView, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ImageBackground, Platform, KeyboardAvoidingView, Image, BackHandler } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch } from 'react-redux';
 import { setGameType } from '../redux/slices/userSlice';
@@ -13,6 +13,17 @@ const GameModeScreen = ({ navigate, goBack }) => {
         dispatch(setGameType(type));
         navigate('gamescreen');
     };
+    useEffect(() => {
+        const backAction = () => {
+            goBack();
+            return true; // prevent default behavior
+        };
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction
+        );
+        return () => backHandler.remove(); // cleanup on unmount
+    }, []);
 
     return (
         <ImageBackground source={require('../assets/inner-page.png')} style={styles.background} resizeMode="cover" >
@@ -27,7 +38,10 @@ const GameModeScreen = ({ navigate, goBack }) => {
             <SafeAreaView style={styles.container}>
                 <View style={styles.container}>
                     <View>
-                        <View style={styles.topheadline}>
+                        <View style={[
+                            styles.topheadline,
+                            Platform.OS !== 'ios' ? { marginTop: 60 } : null
+                        ]}>
                             <BackButton onPress={goBack} />
                             {/* <Text style={styles.headline}>Truth & Dare</Text> */}
                             <Image

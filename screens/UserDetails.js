@@ -118,6 +118,18 @@ export default function UserDetails({ navigate, goBack }) {
         }).start();
     }, [isKeyboardVisible, fadeAnim]);
 
+    useEffect(() => {
+        const backAction = () => {
+            goBack();
+            return true; // prevent default behavior
+        };
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction
+        );
+        return () => backHandler.remove(); // cleanup on unmount
+    }, []);
+
     // useEffect(() => {
     //     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
     //         setKeyboardVisible(true);
@@ -142,7 +154,10 @@ export default function UserDetails({ navigate, goBack }) {
                 >
                     <View style={styles.container}>
                         <View>
-                            <View style={styles.topheadline}>
+                            <View style={[
+                                styles.topheadline,
+                                Platform.OS !== 'ios' ? { marginTop: 60 } : null
+                            ]}>
                                 <BackButton onPress={goBack} />
                                 <Image
                                     source={require('../assets/logo.png')}
@@ -257,7 +272,7 @@ const styles = StyleSheet.create({
     },
     topheadline: {
         marginBottom: 60,
-        marginTop: 20,
+        marginTop: 25,
     },
     headline: {
         fontSize: 55,
@@ -313,6 +328,9 @@ const styles = StyleSheet.create({
         color: '#fff',
         height: 50,
         backgroundColor: 'rgba(217, 217, 217, 0.18)',
+    },
+    genderIcons: {
+        marginRight: 10,
     },
     button: {
         // paddingVertical: 10,
@@ -401,7 +419,7 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
     rightAction: {
-        // backgroundColor: 'red',
+        // backgroundColor: '#ffffff29',
         justifyContent: 'center',
         alignItems: 'flex-end',
         paddingHorizontal: 20,
@@ -414,6 +432,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         justifyContent: 'center',
+        paddingBottom: 10,
         alignItems: 'flex-end',
     },
     themeBtnOutline: {

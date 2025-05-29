@@ -11,7 +11,9 @@ import {
     Image,
     SafeAreaView,
     ImageBackground,
-    Pressable
+    Pressable,
+    BackHandler,
+    Platform
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -124,8 +126,20 @@ const GameScreen = ({ navigate, goBack }) => {
                 { text: 'Go back', onPress: () => goBack() }
             ]
         );
+        return true;
 
     }
+    useEffect(() => {
+        const backAction = () => {
+            goBack();
+            return true; // prevent default behavior
+        };
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            confirmBack
+        );
+        return () => backHandler.remove(); // cleanup on unmount
+    }, []);
 
     const handleNextTurn = () => {
         // Ensure there are players
@@ -169,7 +183,10 @@ const GameScreen = ({ navigate, goBack }) => {
         <ImageBackground source={require('../assets/inner-page.png')} style={styles.background} resizeMode="cover" >
             <SafeAreaView style={styles.container}>
                 <View style={styles.content}>
-                    <View style={styles.topheadline}>
+                    <View style={[
+                        styles.topheadline,
+                        Platform.OS !== 'ios' ? { marginTop: 60 } : null
+                    ]}>
                         <BackButton onPress={confirmBack} />
                         {/* <Text style={styles.headline}>Truth & Dare</Text> */}
                         <Image
