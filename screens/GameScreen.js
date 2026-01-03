@@ -23,9 +23,12 @@ import BackButton from './components/BackButton';
 const GameScreen = ({ navigate, goBack }) => {
     const { users } = useSelector((state) => state.user);
     const gameType = useSelector((state) => state.user.gameType);
+    const selectedInterest = useSelector((state) => state.user.selectedInterest);
+    const AiMode = useSelector((state) => state.user.aiMode);
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
     const [gameHistory, setGameHistory] = useState([]);
     const [currentTask, setCurrentTask] = useState('');
+    // console.log('AiMode', AiMode, gameType, selectedInterest)
 
     const [availableTruths, setAvailableTruths] = useState([
         { text: "What's your most embarrassing moment?" },
@@ -49,17 +52,55 @@ const GameScreen = ({ navigate, goBack }) => {
     const [taskType, setTaskType] = useState(''); // 'truth' or 'dare'
     const [spinValue] = useState(new Animated.Value(0));
 
+    // useEffect(() => {
+    //     fetch(`https://truthanddare-backend.vercel.app/api/questions?category=${gameType}&limit=50`) // replace with your API endpoint
+    //         .then((response) => response.json())
+    //         .then((json) => {
+    //             setAvailableDares(json?.dare || []);
+    //             setAvailableTruths(json?.truth || []);
+    //         })
+    //         .catch((error) => {
+    //             console.error(error);
+    //         });
+    // }, []);
+
     useEffect(() => {
-        fetch(`https://truthanddare-backend.vercel.app/api/questions?category=${gameType}&limit=50`) // replace with your API endpoint
-            .then((response) => response.json())
-            .then((json) => {
-                setAvailableDares(json?.dare || []);
-                setAvailableTruths(json?.truth || []);
+        console.log('AiMode', AiMode, gameType, selectedInterest);
+
+        if (AiMode) {
+            // AI MODE → POST request
+            fetch('http://192.168.1.31:4000/api/aiQuestion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    interest: selectedInterest, // e.g. ['indian meme']
+                    category: gameType,         // normal / spicy / etc
+                    limit: 50,
+                }),
             })
-            .catch((error) => {
-                console.error(error);
-            });
-    }, []);
+                .then((res) => res.json())
+                .then((json) => {
+                    setAvailableDares(json?.dare || []);
+                    setAvailableTruths(json?.truth || []);
+                })
+                .catch((err) => console.error(err));
+
+        } else {
+            // NORMAL MODE → GET request
+            fetch(
+                `https://truthanddare-backend.vercel.app/api/questions?category=${gameType}&limit=50`
+            )
+                .then((res) => res.json())
+                .then((json) => {
+                    setAvailableDares(json?.dare || []);
+                    setAvailableTruths(json?.truth || []);
+                })
+                .catch((err) => console.error(err));
+        }
+    }, [AiMode, gameType, selectedInterest]);
+
     useEffect(() => {
         if (users.length === 0) {
             Alert.alert("No players!", "Please add players first");

@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#141516"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.deepanshsagar.truthdare",
@@ -35,6 +37,9 @@
       "eas": {
         "projectId": "61f5b95f-c077-4b63-b7ea-f432153886e8"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

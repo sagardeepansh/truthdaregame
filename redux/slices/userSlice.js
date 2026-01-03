@@ -3,6 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   users: [],
   gameType: '', // shared across all users
+  selectedInterest: [], // shared across all users
+  aiMode: true, 
 };
 
 const userSlice = createSlice({
@@ -15,11 +17,17 @@ const userSlice = createSlice({
     setGameType: (state, action) => {
       state.gameType = action.payload;
     },
+    setAiMode: (state, action) => {
+      state.aiMode = action.payload;
+    },
+    setSelectedInterest: (state, action) => {
+      state.selectedInterest = action.payload;
+    },
     deleteUser: (state, action) => {
       state.users = state.users.filter(user => user.id !== action.payload);
     },
   },
 });
 
-export const { addUser, setGameType, deleteUser } = userSlice.actions;
+export const { addUser, setGameType, setAiMode, setSelectedInterest, deleteUser } = userSlice.actions;
 export default userSlice.reducer;
