@@ -69,7 +69,7 @@ const GameScreen = ({ navigate, goBack }) => {
 
         if (AiMode) {
             // AI MODE → POST request
-            fetch('http://192.168.1.31:4000/api/aiQuestion', {
+            fetch('https://truthanddare-backend.vercel.app/api/aiQuestion', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
