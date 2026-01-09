@@ -1,24 +1,47 @@
-# 🎉 Truth and Dare Game - React Native (Expo)
+# 🎉 AI-Powered Truth and Dare Game – React Native (Expo)
 
-A fun and interactive **Truth and Dare** game built with **React Native** using **Expo**! Perfect for parties or just hanging out with friends.
+An **AI-based Truth and Dare game** built with **React Native** using **Expo**.  
+This app lets players select **Truth & Dare questions based on their interests**, making every game session unique, fun, and personalized.
+
+Perfect for parties, friends, couples, and group hangouts 🚀
+
+---
+
+## 🤖 Why AI Truth & Dare?
+
+Unlike traditional Truth and Dare apps with fixed questions, this app uses **AI-powered logic** to:
+
+- 🎯 Generate questions based on **selected interests**
+- 🔁 Avoid repetitive questions
+- 🎭 Adapt to different moods and player groups
+- 🧠 Create a smarter and more engaging experience
+
+---
 
 ## 📱 Features
 
-- 🔄 Switch between "Truth" and "Dare"
-- 🎲 Random question generation
+- 🤖 **AI-Based Question Generation**
+- 🎯 Interest-based question selection  
+  _(Funny, Spicy, Romantic, Deep, Crazy, etc.)_
+- 🔄 Switch between **Truth** and **Dare**
+- 🎲 Smart randomization
 - 👨‍👩‍👧‍👦 Multiplayer support
-- 🎨 Clean and user-friendly UI
-- ⚙️ Built using Expo for easy development and deployment
+- 🎨 Clean and modern UI
+- ⚙️ Built using **Expo** for fast development
+
+---
 
 ## 🚀 Getting Started
 
-Follow these steps to get the app running locally:
+Follow the steps below to run the app locally.
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
-- A mobile device or emulator with Expo Go installed
+- Expo Go app installed on your mobile device
+
+---
 
 ### Installation
 
@@ -27,20 +50,17 @@ Follow these steps to get the app running locally:
 ```bash
 git clone https://github.com/sagardeepansh/truthdaregame.git
 cd truthdaregame
-```
 
 2. Install dependencies:
 
 ```bash
 npm install
-# or
-yarn install
 ```
 
 3. Start the development server:
 
 ```bash
-expo start
+npx expo start
 ```
 
 4. Scan the QR code in your Expo Go app to run it on your device.
@@ -61,11 +81,12 @@ expo start
 - React Native
 - Expo
 - JavaScript (ES6+)
-- Context API / useState for state management (customize if you use Redux or any other lib)
+- AI-based question logic
+- Redux API / useState for state management
 
 ## 📸 Screenshots
 
-> _(Add screenshots of your app running here)_
+> (Coming Soon)
 
 ## 📜 License
 
@@ -75,7 +96,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 💡 TODO / Future Features
 
-- 🧠 Custom question input
+- 🧠 Advanced AI personalization
+- ✍️ Custom user-added questions
 - 🎉 Animated transitions
 - 🌐 Online multiplayer support
 - 🔊 Sound effects
@@ -96,7 +118,3 @@ For questions or suggestions, reach out at [connectdeepansh@gmail.com](mailto:co
 
 Made with ❤️ using React Native + Expo
 ```
-
----
-
-Let me know if you'd like to include environment setup instructions, custom fonts, or add logic explanations!
